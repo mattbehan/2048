@@ -37,23 +37,30 @@ Game.prototype.spawnBlock = function(gameArray)  {
 
 // default move upon which other moves are based
 Game.prototype.moveLeft = function() {
-
+  this.board = combineRows(this.board).spawnBlock();
 }
 
 Game.prototype.moveRight = function() {
-
+  this.board = reverseRows(this.board);
+  moveLeft();
+  this.board = reverseRows(this.board);
 }
 
 Game.prototype.moveUp = function() {
-
+  this.board = transpose ( this.board );
+  moveLeft();
+  this.board = transpose ( this.board );
 }
 
+// as a rotation is the composition of two reflections, we essentially rotate the board 90 degrees
 Game.prototype.moveDown = function() {
-
+  this.board = transpose( reverseRows ( this.board ) )
+  moveLeft();
+  this.board = transpose( reverseRows ( this.board ) )
 }
 
 Game.prototype.combineRows = function(nestedArray) {
-
+  return nestedArray.map(combineLikeValuesInRow(row))
 }
 
 function transpose(array) {
@@ -67,13 +74,16 @@ function transpose(array) {
 
 function combineLikeValuesInRow(row) {
   var nonZeros = filterNonZeros(row);
-  var combined_row = [];
   for ( i = 0; i < nonZeros.length - 1; i++ ) {
 
     if (nonZeros[i] === nonZeros[i+1]) {
       nonZeros[i] = nonZeros[i] * 2
-      nonZeros[i + 1]
+      nonZeros.splice(i+1, 1)
     }
+  }
+  var combined_row = nonZeros
+  while (combined_row.length < 4 ) {
+    combined_row.push(0);
   }
   return combined_row;
 }
