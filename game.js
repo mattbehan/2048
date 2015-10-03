@@ -1,6 +1,6 @@
 var Game = function(initializer_string) {
   this.positions = (initializer_string || this.getRandomPositions() )
-  this.board = nestedFormat(this.positions);
+  this.board = nestedFormat(this.positions, 4);
 }
 
 
@@ -12,6 +12,7 @@ Game.prototype.getRandomPositions = function() {
     return gameArray.join();
 }
 
+// fix
 Game.prototype.toString = function() {
   var array = this.positions.split(",")
   var string = ""
@@ -35,32 +36,71 @@ Game.prototype.spawnBlock = function(gameArray)  {
  return gameArray
 }
 
-// default move upon which other moves are based
+Game.prototype.handleKeyPress = function(keypress) {
+
+}
+
+// we treat each move as the composition of functions, like in geometry. Essentially, we rotate the board to be able to combine the rows, then we rotate the board back. Each rotation is the product of two reflections- a transpostion of the rows and columns (diagonal reflection) and a reversal of the rows (reflection in the vertical plane)
+Game.prototype.move = function(transpose, reverse) {
+  if(transpose){
+    this.board = transpose ( this.board );
+  }
+  if(reverse){
+    this.board = reverseRows(this.board);
+  }
+
+  this.undergoMove()
+
+  if(reverse){
+    this.board = reverseRows(this.board);
+  }
+  if(transpose){
+    this.board = transpose ( this.board );
+  }
+}
+
+Game.prototype.undergoMove = function() {
+  console.log("moving")
+  console.log(this)
+  this.board = this.combineRows();
+  this.board = flatten(this.board,[])
+  this.board = this.spawnBlock(this.board);
+  this.board = nestedFormatFromFlat(this.board, 4);
+}
+
 Game.prototype.moveLeft = function() {
-  this.board = combineRows(this.board).spawnBlock();
+  this.move(false, false);
 }
 
 Game.prototype.moveRight = function() {
-  this.board = reverseRows(this.board);
-  moveLeft();
-  this.board = reverseRows(this.board);
+  this.move(false, true);
 }
 
 Game.prototype.moveUp = function() {
-  this.board = transpose ( this.board );
-  moveLeft();
-  this.board = transpose ( this.board );
+  this.move(true, false);
 }
 
-// as a rotation is the composition of two reflections, we essentially rotate the board 90 degrees
 Game.prototype.moveDown = function() {
-  this.board = transpose( reverseRows ( this.board ) )
-  moveLeft();
-  this.board = transpose( reverseRows ( this.board ) )
+  this.move(true, true);
 }
 
-Game.prototype.combineRows = function(nestedArray) {
-  return nestedArray.map(combineLikeValuesInRow(row))
+Game.prototype.combineRows = function() {
+  combinedRows = this.board.map(function(row){
+    var nonZeros = filterNonZeros(row);
+    for ( i = 0; i < nonZeros.length - 1; i++ ) {
+
+      if (nonZeros[i] === nonZeros[i+1]) {
+        nonZeros[i] = nonZeros[i] * 2
+        nonZeros.splice(i+1, 1)
+      }
+    }
+    var combined_row = nonZeros
+    while (combined_row.length < 4 ) {
+      combined_row.push(0);
+    }
+    return combined_row;
+  })
+  return combinedRows;
 }
 
 function transpose(array) {
@@ -70,22 +110,6 @@ function transpose(array) {
     })
   });
   return newArray
-}
-
-function combineLikeValuesInRow(row) {
-  var nonZeros = filterNonZeros(row);
-  for ( i = 0; i < nonZeros.length - 1; i++ ) {
-
-    if (nonZeros[i] === nonZeros[i+1]) {
-      nonZeros[i] = nonZeros[i] * 2
-      nonZeros.splice(i+1, 1)
-    }
-  }
-  var combined_row = nonZeros
-  while (combined_row.length < 4 ) {
-    combined_row.push(0);
-  }
-  return combined_row;
 }
 
 function reverseRows(array) {
@@ -106,27 +130,51 @@ function randPosition(){
   return Math.floor(Math.random() * 16)
 };
 
-function nestedFormat(positions) {
+function nestedFormat(positions, rowLength) {
   array = positions.split(",");
   new_array = []
   while(array.length !==0 ) {
-    new_array.push(array.splice(0,4) )
+    new_array.push(array.splice(0, rowLength) )
   }
   return new_array
 }
 
+function nestedFormatFromFlat(array, rowLength) {
+  newArray = []
+  while (array.length !== 0 ) {
+    newArray.push(array.splice(0,4));
+  }
+  return newArray;
+}
+
+// not sure I ever use this
+function flatten(nestedArray, initialValue) {
+  return nestedArray.reduce(function(a, b) {
+    return a.concat(b)
+  }, initialValue)
+}
+
+
 game = new Game('2,2,2,2,0,0,0,0,0,0,2,0,2,0,0,0');
 console.log(game)
 
-array = nestedFormat(game.positions)
+
+array = nestedFormat(game.positions, 4)
 console.log("nested")
 console.log(array)
 reversed_array = reverseRows( array )
 console.log("reversed: ")
 console.log(reversed_array)
-var transposedArray = game.transpose(reversed_array)
+var transposedArray = transpose(reversed_array)
 console.log("Transposed Array:");
 console.log(transposedArray)
-var transformedLeftArray = game.transformLeft(transposedArray)
+var transformedLeftArray = game.moveLeft()
 console.log("Transformed Left Array:");
-console.log(transformedLeftArray)
+console.log(game.board)
+var transformedLeftArray = game.moveLeft()
+console.log("Transformed Left Array:");
+console.log(game.board)
+var transformedLeftArray = game.moveLeft()
+console.log("Transformed Left Array:");
+console.log(game.board)
+
