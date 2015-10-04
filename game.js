@@ -1,8 +1,14 @@
 var Game = function(initializer_string) {
   this.positions = (initializer_string || this.getRandomPositions() )
   this.board = nestedFormat(this.positions, 4);
+  this.score = 0;
 }
 
+Game.prototype.calculateScore = function() {
+  this.score = flatten(this.board, []).reduce(function(a,b){
+    return parseInt(a)+parseInt(b)
+  }) -4;
+}
 
 Game.prototype.getRandomPositions = function() {
     var gameArray = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
@@ -22,7 +28,6 @@ Game.prototype.toString = function() {
   return string;
 }
 
-
 Game.prototype.spawnBlock = function(gameArray)  {
   var finished = false
   while (finished !== true) {
@@ -34,10 +39,6 @@ Game.prototype.spawnBlock = function(gameArray)  {
     }
   }
  return gameArray
-}
-
-Game.prototype.handleKeyPress = function(keypress) {
-
 }
 
 // we treat each move as the composition of functions, like in geometry. Essentially, we rotate the board to be able to combine the rows, then we rotate the board back. Each rotation is the product of two reflections- a transpostion of the rows and columns (diagonal reflection) and a reversal of the rows (reflection in the vertical plane)
@@ -66,6 +67,7 @@ Game.prototype.undergoMove = function() {
   this.board = flatten(this.board,[])
   this.board = this.spawnBlock(this.board);
   this.board = nestedFormatFromFlat(this.board, 4);
+  this.calculateScore();
 }
 
 Game.prototype.moveLeft = function() {
@@ -131,7 +133,9 @@ function randPosition(){
 };
 
 function nestedFormat(positions, rowLength) {
-  array = positions.split(",");
+  array = positions.split(",").map( function(number){
+    return parseInt(number);
+  });
   new_array = []
   while(array.length !==0 ) {
     new_array.push(array.splice(0, rowLength) )
@@ -177,4 +181,5 @@ console.log(game.board)
 var transformedLeftArray = game.moveLeft()
 console.log("Transformed Left Array:");
 console.log(game.board)
+console.log(game)
 
