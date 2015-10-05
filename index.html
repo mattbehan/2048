@@ -5,7 +5,7 @@
   <link rel="stylesheet" href="application.css">
   <script src="mousetrap.js"></script>
 
-  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
 
   <script src="game.js"></script>
   <script src="controller.js"></script>
@@ -16,14 +16,21 @@
 </head>
 <body>
 
+  <div class = "overlay"> </div>
+
   <div id="top-bar">
     <div id = "score"></div>
   </div>
 
   <div id="start-screen">
-    <form id="start-form">
-      <input id="tiles" type="text" name="previous-tiles" placeholder="input previous board tiles separated by commas here"/>
+    <h1 id="sign"> 2048 </h1>
+    <form id="new-form">
       <input id="new-game" type="submit" value="New Game"/>
+    </form>
+    <form id="continue-form">
+      <p> OR </p>
+      <p> Input previous board tiles separated by commas </p>
+      <input id="tiles" type="text" name="previous-tiles" placeholder="e.g. 2,4,4,2,0,0,0,0,4,4,0,0,16,32,64,128"/>
       <input id="continue" type="submit" value="Continue previous game"/>
     </form>
   </div>

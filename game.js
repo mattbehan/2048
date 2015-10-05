@@ -2,6 +2,7 @@ var Game = function(initializer_string) {
   this.positions = (initializer_string || this.getRandomPositions() )
   this.board = nestedFormat(this.positions, 4);
   this.score = 0;
+  this.finished = false;
 }
 
 Game.prototype.calculateScore = function() {
@@ -16,6 +17,31 @@ Game.prototype.getRandomPositions = function() {
     gameArray[firstPosition] = 2;
     gameArray = this.spawnBlock(gameArray)
     return gameArray.join();
+}
+
+Game.prototype.checkIfFinished = function() {
+  score = this.score;
+  board = this.board;
+  moveLeft();
+  leftScore = this.score;
+  this.board = board;
+  moveRight();
+  rightScore = this.score;
+  this.board = board;
+  moveUp();
+  upScore = this.score;
+  this.board = board;
+  moveDown();
+  downScore = this.score;
+  this.board = board;
+  if (leftScore,rightScore,upScore,downScore === score) {
+    this.finished = true;
+  }
+}
+
+Game.prototype.validFormInput = function(input, totalSquares) {
+  input = input.match(/\d,/g)
+  return input.length === totalSquares - 1
 }
 
 // fix
