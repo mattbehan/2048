@@ -39,9 +39,16 @@ Game.prototype.checkIfFinished = function() {
   }
 }
 
-Game.prototype.validFormInput = function(input, totalSquares) {
-  input = input.match(/\d,/g)
-  return input.length === totalSquares - 1
+Game.validFormInput = function(input, totalSquares) {
+  if ( !input.match(/\d+,\d+,\d+,\d+,\d+,\d+,\d+,\d+,\d+,\d+,\d+,\d+,\d+,\d+,\d+,\d+/) ) {
+    return false;
+  }
+  for(i = 0; i < totalSquares; i++) {
+    if ( parseInt( input[i] ) % 2 !== 0 ) {
+      return false
+    }
+  }
+  return true;
 }
 
 // fix
@@ -68,20 +75,20 @@ Game.prototype.spawnBlock = function(gameArray)  {
 }
 
 // we treat each move as the composition of functions, like in geometry. Essentially, we rotate the board to be able to combine the rows, then we rotate the board back. Each rotation is the product of two reflections- a transpostion of the rows and columns (diagonal reflection) and a reversal of the rows (reflection in the vertical plane)
-Game.prototype.move = function(transpose, reverse) {
-  if(transpose){
+Game.prototype.move = function(transposed, reversed) {
+  if(transposed){
     this.board = transpose ( this.board );
   }
-  if(reverse){
+  if(reversed){
     this.board = reverseRows(this.board);
   }
 
   this.undergoMove()
 
-  if(reverse){
+  if(reversed){
     this.board = reverseRows(this.board);
   }
-  if(transpose){
+  if(transposed){
     this.board = transpose ( this.board );
   }
 }

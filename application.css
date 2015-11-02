@@ -4,28 +4,35 @@
   box-sizing: border-box;
   font-family:  "Clear Sans", "Helvetica Neue", Arial, sans-serif;
   color: #776e65;
+  font-size: 18px;
 }
 
 text {
 
 }
 
+#board-container {
+  text-align: center;
+  height: 451px;
+  margin: auto;
+  width: 451px;
+}
+
+
 #board {
-  position: fixed;
-  top: 40%;
-  left: 40%;
-  background-color: gray;
+  position: relative;
+  background-color: #aaaaaa;
   border-collapse: separate;
-  border-spacing: 7px;
-  border-radius: 3px;
+  border-spacing: 10px;
+  border-radius: 10px;
 }
 
 td {
-  background-color: lightgray;
+  background-color: #dddbdb;
   border: 1px solid black;
-  width: 60px;
-  height: 60px;
-  border-radius: 2px;
+  width: 57.5px;
+  height: 57.5px;
+  border-radius: 3px;
 
 }
 
@@ -63,4 +70,17 @@ h1 {
     font-weight: bold;
     margin: 0;
     display: block;
+}
+
+@media screen and (min-width: 501px) {
+  #board-container {
+    height: 500px;
+    width: 500px;
+  }
+
+  td {
+    height: 106.25px;
+    width: 106.25px;
+    border-radius: 5px;
+  }
 }
